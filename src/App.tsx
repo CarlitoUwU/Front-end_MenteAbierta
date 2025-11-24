@@ -1,35 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/LoginPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { RoutesEnum } from "./utils/routes";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ backgroundColor: "#F5F5DC", minHeight: "100vh" }}>
+      <Routes>
+        <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />
+        <Route path={RoutesEnum.REGISTER} element={<RegisterPage />} />
+        <Route path={RoutesEnum.LOGIN} element={<LoginPage />} />
+        <Route path={RoutesEnum.DASHBOARD} element={<DashboardPage />} />
+
+        {/* Ruta 404 */}
+        <Route path="*" element={<h1>Página no encontrada</h1>} />
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;
