@@ -69,6 +69,17 @@ const Diccionary: DiccionaryType[] = [
   }
 ];
 
+export type DashboardSection = 
+  | "inicio" 
+  | "registrar-emocion" 
+  | "cuestionarios" 
+  | "diario" 
+  | "ejercicios" 
+  | "contenido" 
+  | "tips" 
+  | "foro" 
+  | "perfil";
+
 export const DashboardPage = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
