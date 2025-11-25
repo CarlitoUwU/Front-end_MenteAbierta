@@ -3,7 +3,7 @@ import { Sidebar } from "../components/dashboard/Sidebar";
 import { Topbar } from "../components/dashboard/Topbar";
 
 export const DashboardPage = () => {
-    return (
+  return (
     <div className="flex min-h-screen bg-[#f5f5cf]">
       <Sidebar />
 
