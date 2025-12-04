@@ -3,10 +3,11 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { RoutesEnum } from "./utils/routes";
+import { COLORS } from "./constants/colors";
 
 function App() {
   return (
-    <div style={{ backgroundColor: "#F5F5DC", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: COLORS.azul_claro, minHeight: "100vh" }}>
       <Routes>
         <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />
         <Route path={RoutesEnum.REGISTER} element={<RegisterPage />} />

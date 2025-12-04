@@ -69,23 +69,12 @@ const Diccionary: DiccionaryType[] = [
   }
 ];
 
-export type DashboardSection = 
-  | "inicio" 
-  | "registrar-emocion" 
-  | "cuestionarios" 
-  | "diario" 
-  | "ejercicios" 
-  | "contenido" 
-  | "tips" 
-  | "foro" 
-  | "perfil";
-
 export const DashboardPage = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5cf]">
+    <div className="flex min-h-screen">
       <Sidebar>
         {Diccionary.map((item, index) => (
           <SidebarItem
