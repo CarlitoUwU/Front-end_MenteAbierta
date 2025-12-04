@@ -9,8 +9,9 @@ import {
   MdChevronRight,
   MdExitToApp,
 } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
-export const PerfilContent = () => {
+export const PerfilContent = (_props: DashboardContentProps) => {
   const [notificacionesEmail, setNotificacionesEmail] = useState(false);
   const [notificacionesPush, setNotificacionesPush] = useState(false);
   const [resumenSemanal, setResumenSemanal] = useState(true);

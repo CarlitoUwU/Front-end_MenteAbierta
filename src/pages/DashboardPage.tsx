@@ -13,11 +13,12 @@ import { ForoContent } from "../components/ForoContent";
 import { PerfilContent } from "../components/PerfilContent";
 import { SidebarItem } from "../components/dashboard/SidebarItem";
 import { useState } from "react";
+import type { DashboardContentProps, Sections } from "../@types/dashboard";
 
 type DiccionaryType = {
   text: string;
   icon: React.ReactNode;
-  content: React.ReactNode;
+  content: (props: DashboardContentProps) => React.ReactNode;
   active?: boolean;
 };
 
@@ -25,57 +26,61 @@ const Diccionary: DiccionaryType[] = [
   {
     text: "Inicio",
     icon: <MdHome />,
-    content: <InicioContent />
+    content: (props) => <InicioContent {...props} />
   },
   {
     text: "Registrar Emoción",
     icon: <MdFavorite />,
-    content: <RegistrarEmocionContent />
+    content: (props) => <RegistrarEmocionContent {...props} />
   },
   {
     text: "Cuestionarios",
     icon: <MdQuiz />,
-    content: <CuestionarioContent />
+    content: (props) => <CuestionarioContent {...props} />
   },
   {
     text: "Diario",
     icon: <MdLibraryBooks />,
-    content: <DiarioContent />
+    content: (props) => <DiarioContent {...props} />
   },
   {
     text: "Ejercicios",
     icon: <MdSelfImprovement />,
-    content: <EjerciciosContent />
+    content: (props) => <EjerciciosContent {...props} />
   },
   {
     text: "Contenido",
     icon: <MdContentCopy />,
-    content: <ContenidoContent />
+    content: (props) => <ContenidoContent {...props} />
   },
   {
     text: "Tips",
     icon: <MdLightbulb />,
-    content: <TipsContent />
+    content: (props) => <TipsContent {...props} />
   },
   {
     text: "Foro",
     icon: <MdForum />,
-    content: <ForoContent />
+    content: (props) => <ForoContent {...props} />
   },
   {
     text: "Perfil",
     icon: <MdPerson />,
-    content: <PerfilContent />
+    content: (props) => <PerfilContent {...props} />
   }
 ];
+
 
 export const DashboardPage = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const toPerfil = () => {
-    setActiveIndex(Diccionary.findIndex(item => item.text === "Perfil"));
-  }
+  const toSecction = (section: Sections) => {
+    const index = Diccionary.findIndex(item => item.text === section);
+    if (index !== -1) {
+      setActiveIndex(index);
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -92,9 +97,9 @@ export const DashboardPage = () => {
       </Sidebar>
 
       <div className="flex flex-col flex-1">
-        <Topbar toPerfil={toPerfil} />
+        <Topbar toPerfil={() => toSecction("Perfil")} />
         <DashboardContent>
-          {Diccionary[activeIndex].content}
+          {Diccionary[activeIndex].content({ toSecction })}
         </DashboardContent>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { MdCalendarToday, MdAdd } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
-export const DiarioContent = () => {
+export const DiarioContent = (_props: DashboardContentProps) => {
   // Ejemplo de entradas (las puedes traer de tu API luego)
   const entradas = [
     {

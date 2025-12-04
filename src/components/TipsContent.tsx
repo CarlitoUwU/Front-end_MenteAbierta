@@ -7,6 +7,7 @@ import {
   MdFavorite,
   MdRefresh
 } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
 type Categoria = "Todos" | "Diario" | "Estrés" | "Sueño" | "Bienestar";
 
@@ -18,7 +19,7 @@ interface Tip {
   color: "yellow" | "purple" | "white";
 }
 
-export const TipsContent = () => {
+export const TipsContent = (_props: DashboardContentProps) => {
   const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("Todos");
   const [tipActualIndex, setTipActualIndex] = useState(0);
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MdAssignment, MdAccessTime, MdEdit, MdClose, MdCheckCircle } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
 interface Cuestionario {
   id: string;
@@ -18,7 +19,7 @@ interface RespuestaRegistroDiario {
   pregunta6: number;
 }
 
-export const CuestionarioContent = () => {
+export const CuestionarioContent = (_props: DashboardContentProps) => {
   const [cuestionarioActivo, setCuestionarioActivo] = useState<string | null>(null);
   const [mostrarCompletado, setMostrarCompletado] = useState(false);
   const [respuestas, setRespuestas] = useState<RespuestaRegistroDiario>({

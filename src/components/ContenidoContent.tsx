@@ -1,6 +1,7 @@
 import { MdAccessTime } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
-export const ContenidoContent = () => {
+export const ContenidoContent = (_props: DashboardContentProps) => {
   return (
     <div className="p-6 space-y-6">
 

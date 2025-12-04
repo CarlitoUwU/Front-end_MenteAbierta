@@ -1,6 +1,7 @@
 import { FiPlus, FiMessageCircle, FiHeart } from "react-icons/fi";
+import type { DashboardContentProps } from "../@types/dashboard";
 
-export const ForoContent = () => {
+export const ForoContent = (_props: DashboardContentProps) => {
   return (
     <div className="max-w-4xl mx-auto p-6">
 

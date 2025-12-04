@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaBolt, FaCloudRain, FaFrown, FaMeh, FaHeart, FaSmile } from "react-icons/fa";
+import type { DashboardContentProps } from "../@types/dashboard";
 
 const emociones = [
   { id: "feliz", label: "Feliz", color: "bg-yellow-400", icon: <FaSmile size={30} /> },
@@ -10,7 +11,7 @@ const emociones = [
   { id: "enojado", label: "Enojado", color: "bg-red-400", icon: <FaFrown size={30} /> },
 ];
 
-export const RegistrarEmocionContent = () => {
+export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
 
   const [mostrarCaja, setMostrarCaja] = useState(false);
 

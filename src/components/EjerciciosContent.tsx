@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MdAccessTime, MdAir, MdFavorite, MdNightlight, MdSentimentVerySatisfied } from "react-icons/md";
+import type { DashboardContentProps } from "../@types/dashboard";
 
 type Categoria = "Todos" | "Respiración" | "Relajación" | "Mindfulness" | "Movimiento";
 
@@ -14,7 +15,7 @@ interface Ejercicio {
   colorFondo: string;
 }
 
-export const EjerciciosContent = () => {
+export const EjerciciosContent = (_props: DashboardContentProps) => {
   const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("Todos");
 
   const categorias: Categoria[] = ["Todos", "Respiración", "Relajación", "Mindfulness", "Movimiento"];
