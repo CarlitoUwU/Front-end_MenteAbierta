@@ -2,8 +2,11 @@ import { MdNotifications, MdSettings, MdSearch } from "react-icons/md";
 import { COLORS } from "../../constants/colors";
 import { Avatar } from "../avatar/Avatar";
 
+type TopbarProps = {
+  toPerfil: () => void;
+};
 
-export const Topbar = () => {
+export const Topbar = ({ toPerfil }: TopbarProps) => {
   return (
     <header
       className="py-5 px-8 shadow-md border-b"
@@ -74,7 +77,10 @@ export const Topbar = () => {
           ></div>
 
           {/* Profile */}
-          <button className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer hover:brightness-110">
+          <button
+            className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer hover:brightness-110"
+            onClick={toPerfil}
+          >
             <Avatar letter="U" />
             <div className="hidden lg:block text-left">
               <p

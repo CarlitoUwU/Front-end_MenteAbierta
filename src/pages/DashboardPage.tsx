@@ -73,6 +73,10 @@ export const DashboardPage = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const toPerfil = () => {
+    setActiveIndex(Diccionary.findIndex(item => item.text === "Perfil"));
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar>
@@ -88,7 +92,7 @@ export const DashboardPage = () => {
       </Sidebar>
 
       <div className="flex flex-col flex-1">
-        <Topbar />
+        <Topbar toPerfil={toPerfil} />
         <DashboardContent>
           {Diccionary[activeIndex].content}
         </DashboardContent>
