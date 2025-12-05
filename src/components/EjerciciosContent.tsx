@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { MdAccessTime, MdAir, MdFavorite, MdNightlight, MdSentimentVerySatisfied } from "react-icons/md";
+import { MdAir, MdFavorite, MdNightlight, MdSentimentVerySatisfied } from "react-icons/md";
 import type { DashboardContentProps } from "../@types/dashboard";
+import { CategoriasContent } from "./ejercicios/CategoriasContent";
+import { CategoriaItem } from "./ejercicios/CatergoriaItem";
+import { EjercicioCard } from "./ejercicios/EjercicioCard";
 
 type Categoria = "Todos" | "Respiración" | "Relajación" | "Mindfulness" | "Movimiento";
 
@@ -78,62 +81,17 @@ export const EjerciciosContent = (_props: DashboardContentProps) => {
       </div>
 
       {/* Filtros/Categorías - Pills horizontales */}
-      <div className="overflow-x-auto pb-2">
-        <div className="flex gap-3 min-w-max">
-          {categorias.map((categoria) => (
-            <button
-              key={categoria}
-              onClick={() => setCategoriaActiva(categoria)}
-              className={`px-6 py-2.5 rounded-full font-medium transition-all whitespace-nowrap ${
-                categoriaActiva === categoria
-                  ? "bg-purple-600 text-white shadow-md"
-                  : "bg-white text-gray-700 hover:bg-gray-50 shadow-sm"
-              }`}
-            >
-              {categoria}
-            </button>
-          ))}
-        </div>
-      </div>
+      <CategoriasContent>
+        {categorias.map(categoria =>
+          <CategoriaItem key={categoria} categoria={categoria} isActiva={categoria === categoriaActiva} onClick={() => setCategoriaActiva(categoria)} />
+        )}
+      </CategoriasContent>
 
       {/* Grid de tarjetas de ejercicios */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {ejerciciosFiltrados.map((ejercicio) => {
-          const IconoEjercicio = ejercicio.icono;
-          
-          return (
-            <div
-              key={ejercicio.id}
-              className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow"
-            >
-              {/* Icono y contenido */}
-              <div className="flex gap-4 mb-4">
-                <div className={`${ejercicio.colorFondo} rounded-2xl p-4 flex-shrink-0 h-fit`}>
-                  <IconoEjercicio className={`text-4xl ${ejercicio.colorIcono}`} />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    {ejercicio.titulo}
-                  </h2>
-                  <p className="text-gray-600 leading-relaxed">
-                    {ejercicio.descripcion}
-                  </p>
-                </div>
-              </div>
-
-              {/* Metadata inferior */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MdAccessTime className="text-lg" />
-                  <span className="text-sm font-medium">{ejercicio.duracion}</span>
-                </div>
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-                  {ejercicio.categoria}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+        {ejerciciosFiltrados.map((ejercicio) =>
+          <EjercicioCard {...ejercicio} key={ejercicio.id} />
+        )}
       </div>
 
       {/* Mensaje cuando no hay ejercicios filtrados */}
