@@ -1,0 +1,99 @@
+{
+  "cuestionarios_data": [
+    {
+      "id": "registro-diario",
+      "titulo": "Registro Diario",
+      "descripcion": "Evalúa tu estado emocional y bienestar del día",
+      "duracion": "1 min",
+      "preguntas": 6
+    },
+    {
+      "id": "bienestar-general",
+      "titulo": "Bienestar General",
+      "descripcion": "Evalúa tu estado de bienestar actual en diferentes áreas de tu vida",
+      "duracion": "5-7 min",
+      "preguntas": 10
+    },
+    {
+      "id": "manejo-estres",
+      "titulo": "Manejo del Estrés",
+      "descripcion": "Identifica cómo estás manejando el estrés en tu día a día",
+      "duracion": "3-5 min",
+      "preguntas": 8
+    },
+    {
+      "id": "calidad-sueno",
+      "titulo": "Calidad del Sueño",
+      "descripcion": "Reflexiona sobre tus patrones de sueño y descanso",
+      "duracion": "4-6 min",
+      "preguntas": 9
+    }
+  ],
+  "preguntas_data": [
+    {
+      "id": 1,
+      "label": "¿Cómo te sentiste hoy en general?",
+      "type": "scale",
+      "scale": {
+        "min": 0,
+        "max": 10,
+        "minLabel": "Muy mal",
+        "maxLabel": "Muy bien"
+      }
+    },
+    {
+      "id": 2,
+      "label": "¿Qué tan abrumado/a te sentiste hoy?",
+      "type": "options",
+      "options": [
+        "En ningún momento",
+        "En algunos momentos",
+        "En varios momentos del día",
+        "En gran parte del día"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "¿Pudiste dormir bien anoche?",
+      "type": "options",
+      "options": [
+        "No",
+        "Parcialmente",
+        "Sí"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "¿Lograste dedicar tiempo para ti mismo/a hoy?",
+      "type": "options",
+      "options": [
+        "No",
+        "Sí, un poco",
+        "Sí, bastante",
+        "Sí, mucho"
+      ]
+    },
+    {
+      "id": 5,
+      "label": "¿Tuviste dificultades para concentrarte?",
+      "type": "options",
+      "options": [
+        "En ningún momento",
+        "En algunos momentos",
+        "En varios momentos del día",
+        "En gran parte del día"
+      ]
+    },
+    {
+      "id": 6,
+      "label": "¿Sentiste emociones intensas difíciles de manejar?",
+      "type": "options",
+      "options": [
+        "En ningún momento",
+        "En algunos momentos",
+        "En varios momentos del día",
+        "En gran parte del día"
+      ]
+    }
+  ]
+}
