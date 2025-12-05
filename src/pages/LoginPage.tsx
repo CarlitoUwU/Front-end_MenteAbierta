@@ -18,6 +18,8 @@ export const LoginPage = () => {
     setError(null);
     setIsLoading(true);
 
+    navigate('/dashboard'); // solo para pruebas xd
+
     // URL del Backend desde el archivo .env
     const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
