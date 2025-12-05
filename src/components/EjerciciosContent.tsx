@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { MdAir, MdFavorite, MdNightlight, MdSentimentVerySatisfied } from "react-icons/md";
 import type { DashboardContentProps } from "../@types/dashboard";
-import { CategoriasContent } from "./ejercicios/CategoriasContent";
-import { CategoriaItem } from "./ejercicios/CatergoriaItem";
+import { CategoriasContent } from "./ui/CategoriasContent";
+import { CategoriaItem } from "./ui/CatergoriaItem";
 import { EjercicioCard } from "./ejercicios/EjercicioCard";
 
 type Categoria = "Todos" | "Respiración" | "Relajación" | "Mindfulness" | "Movimiento";

@@ -4,7 +4,7 @@ import { DiarioItem } from "./diario/DiarioItem";
 import { COLORS } from "../constants/colors";
 import { DiarioModal } from "./diario/DiarioModal";
 import { DiarioHeader } from "./diario/DiarioHeader";
-import { DiarioSearch } from "./diario/DiarioSearch";
+import { SearchBard } from "./ui/SearchBard";
 
 type EntradaDiario = {
   titulo: string;
@@ -65,7 +65,7 @@ export const DiarioContent = (_props: DashboardContentProps) => {
       <DiarioHeader onNewEntrada={() => setIsModalOpen(true)} />
 
       {/* Buscador */}
-      <DiarioSearch value={searchTerm} onChange={setSearchTerm} />
+      <SearchBard value={searchTerm} onChange={setSearchTerm} placeholder="Burscar Diario..." />
 
       {/* Lista de entradas */}
       <div className="space-y-4">
