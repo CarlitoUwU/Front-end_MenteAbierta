@@ -1,16 +1,20 @@
 import { COLORS } from "../../constants/colors";
 
-type DiarioSearchProps = {
+type SearchProps = {
   value: string;
   onChange: (value: string) => void;
 };
 
-export const DiarioSearch = ({ value, onChange }: DiarioSearchProps) => {
+type SearchNativeProps = React.InputHTMLAttributes<HTMLInputElement>
+
+type Props = SearchProps & Omit<SearchNativeProps, "onChange">;
+
+export const SearchBard = ({ value, onChange, ...other }: Props) => {
   return (
     <div className="mb-6">
       <input
         type="text"
-        placeholder="Buscar por título..."
+        {...other}
         className="w-full p-4 rounded-lg shadow-sm outline-none transition"
         value={value}
         onChange={(e) => onChange(e.target.value)}
