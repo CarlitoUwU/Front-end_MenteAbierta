@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { MdLibraryBooks, MdSelfImprovement, MdForum } from "react-icons/md";
 import { TipDia } from "./dashboard/inicio/TipDia";
 import type { DashboardContentProps } from "../@types/dashboard";
@@ -7,8 +8,33 @@ import { ColumnItem } from "./dashboard/inicio/ColumnItem";
 import { NotificacionesPanel } from "./dashboard/inicio/NotificacionesPanel";
 import { NotificacionItem } from "./dashboard/inicio/NotificacionItem";
 import { COLORS } from "../constants/colors";
+import { authService } from "../services/auth.service";
+import { tipsService } from "../services/tips.service";
+import type { Tip } from "../types";
 
 export const InicioContent = ({ toSecction }: DashboardContentProps) => {
+  const [tipDelDia, setTipDelDia] = useState<Tip | null>(null);
+  const [loadingTip, setLoadingTip] = useState(true);
+
+  // Obtener usuario actual
+  const usuario = authService.getCurrentUser();
+  const nombreUsuario = usuario?.seudonimo || usuario?.email?.split('@')[0] || 'Usuario';
+
+  // Cargar tip del día al montar el componente
+  useEffect(() => {
+    const cargarTipDelDia = async () => {
+      try {
+        const tip = await tipsService.getTipDelDia();
+        setTipDelDia(tip);
+      } catch (error) {
+        console.error("Error al cargar tip del día:", error);
+      } finally {
+        setLoadingTip(false);
+      }
+    };
+
+    cargarTipDelDia();
+  }, []);
 
   const emotionalData = [
     { day: "Lun", level: "bajo", height: 30, color: "bg-yellow-400" },
@@ -31,12 +57,18 @@ export const InicioContent = ({ toSecction }: DashboardContentProps) => {
       {/* Fila 1: Header */}
       <div>
         <h1 style={{ color: COLORS.texto_oscuro }} className="text-4xl font-bold">
-          Hola, user123
+          Hola, {nombreUsuario}
         </h1>
       </div>
 
       {/* Fila 2: Tip del día */}
-      <TipDia />
+      {loadingTip ? (
+        <div className="rounded-lg shadow-md p-6 bg-gray-100">
+          <p className="text-gray-500 text-center">Cargando tip del día...</p>
+        </div>
+      ) : (
+        <TipDia phrase={tipDelDia?.contenido} />
+      )}
 
       {/* Fila 3: Navegación horizontal */}
       <div className="grid grid-cols-3 gap-6">
