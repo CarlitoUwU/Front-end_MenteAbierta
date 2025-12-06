@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import { RoutesEnum } from '../utils/routes';
 import { authService } from '../services/auth.service';
+import { COLORS } from '../constants/colors';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
@@ -86,49 +87,97 @@ export const RegisterPage = () => {
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label className="text-gray-700 text-sm">Correo electrónico *</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Correo electrónico *</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="tu@email.com"
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
           </div>
 
           <div>
-            <label className="text-gray-700 text-sm">Alias (opcional)</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Alias (opcional)</label>
             <input
               type="text"
               value={seudonimo}
               onChange={(e) => setSeudonimo(e.target.value)}
               placeholder="¿Cómo te gustaría que te llamemos?"
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
           </div>
 
           <div>
-            <label className="text-gray-700 text-sm">Contraseña *</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Contraseña *</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Mínimo 8 caracteres"
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
           </div>
 
           <div>
-            <label className="text-gray-700 text-sm">Confirmar contraseña *</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Confirmar contraseña *</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="Repite tu contraseña"
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
           </div>
 
@@ -139,13 +188,13 @@ export const RegisterPage = () => {
               onChange={(e) => setAcceptTerms(e.target.checked)}
               className="w-4 h-4" 
             />
-            <span className="text-gray-600">
+            <span style={{ color: COLORS.texto_medio }}>
               Acepto los
-              <a href="#" className="text-purple-600 ml-1 underline">
+              <a href="#" className="ml-1 underline hover:brightness-110" style={{ color: COLORS.azul }}>
                 Términos y Condiciones
               </a>
               y la
-              <a href="#" className="text-purple-600 ml-1 underline">
+              <a href="#" className="ml-1 underline hover:brightness-110" style={{ color: COLORS.azul }}>
                 Política de Privacidad
               </a>
             </span>

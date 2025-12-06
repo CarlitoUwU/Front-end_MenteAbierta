@@ -46,18 +46,26 @@ export const Topbar = ({ toPerfil }: TopbarProps) => {
         <div className="flex-1 max-w-xl">
           <div className="relative">
             <MdSearch
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-xl"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-xl pointer-events-none"
               style={{ color: COLORS.texto_medio }}
             />
 
             <input
               type="text"
               placeholder="Buscar ejercicios, tips, contenido..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl transition-all"
+              className="w-full pl-12 pr-4 py-3 rounded-xl transition-all outline-none"
               style={{
                 backgroundColor: COLORS.claro,
                 border: `1px solid ${COLORS.azul_claro}`,
                 color: COLORS.texto_oscuro,
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.boxShadow = `0 0 0 3px ${COLORS.azul_claro}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul_claro;
+                e.currentTarget.style.boxShadow = 'none';
               }}
             />
           </div>
@@ -68,8 +76,10 @@ export const Topbar = ({ toPerfil }: TopbarProps) => {
 
           {/* Notifications */}
           <button
-            className="relative p-2.5 rounded-lg transition-all cursor-pointer hover:brightness-110"
+            className="relative p-2.5 rounded-lg transition-all cursor-pointer"
             style={{ backgroundColor: COLORS.claro }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.azul_claro}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.claro}
           >
             <MdNotifications
               className="text-2xl transition-colors"
@@ -86,8 +96,10 @@ export const Topbar = ({ toPerfil }: TopbarProps) => {
 
           {/* Settings */}
           <button
-            className="p-2.5 rounded-lg transition-all cursor-pointer hover:brightness-110"
+            className="p-2.5 rounded-lg transition-all cursor-pointer"
             style={{ backgroundColor: COLORS.claro }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.azul_claro}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.claro}
           >
             <MdSettings
               className="text-2xl"

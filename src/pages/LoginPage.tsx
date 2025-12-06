@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import { RoutesEnum } from '../utils/routes';
 import { authService } from '../services/auth.service';
+import { COLORS } from '../constants/colors';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -66,27 +67,51 @@ export const LoginPage = () => {
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
-            <label className="text-gray-700 text-sm">Correo electrónico</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Correo electrónico</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // Captura lo que escribes
+              onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="tu@email.com"
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
           </div>
 
           <div>
-            <label className="text-gray-700 text-sm">Contraseña</label>
+            <label className="text-sm font-medium" style={{ color: COLORS.texto_medio }}>Contraseña</label>
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // Captura lo que escribes
+              onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="mt-1 w-full border rounded-xl p-3 focus:outline-none focus:ring-2"
+              style={{ 
+                borderColor: COLORS.gris_claro,
+                color: COLORS.texto_oscuro
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.azul;
+                e.currentTarget.style.outline = `2px solid ${COLORS.azul}`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.gris_claro;
+                e.currentTarget.style.outline = 'none';
+              }}
             />
-            <a href="#" className="text-xs text-purple-600 mt-1 inline-block hover:underline">
+            <a href="#" className="text-xs mt-1 inline-block hover:underline" style={{ color: COLORS.azul }}>
               ¿Olvidaste tu contraseña?
             </a>
           </div>
@@ -94,17 +119,25 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full text-white py-3 rounded-xl font-semibold mt-2 transition ${
-              isLoading ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-500 hover:bg-purple-600'
-            }`}
+            className="w-full text-white py-3 rounded-xl font-semibold mt-2 transition"
+            style={{ 
+              backgroundColor: isLoading ? COLORS.gris_medio : COLORS.azul,
+              cursor: isLoading ? 'not-allowed' : 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading) e.currentTarget.style.backgroundColor = COLORS.azul_semi;
+            }}
+            onMouseLeave={(e) => {
+              if (!isLoading) e.currentTarget.style.backgroundColor = COLORS.azul;
+            }}
           >
             {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-6 text-gray-600">
+        <p className="text-center text-sm mt-6" style={{ color: COLORS.texto_medio }}>
           ¿No tienes cuenta?
-          <a href={RoutesEnum.REGISTER} className="text-purple-600 font-semibold hover:underline ml-1">
+          <a href={RoutesEnum.REGISTER} className="font-semibold hover:underline ml-1" style={{ color: COLORS.azul }}>
             Regístrate
           </a>
         </p>

@@ -54,7 +54,10 @@ export const EjercicioCard = ({ id, icono, colorFondo, colorIcono, titulo, descr
           {onCompletar && (
             <button
               onClick={onCompletar}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              className="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors font-medium"
+              style={{ backgroundColor: COLORS.azul }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.azul_semi}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.azul}
             >
               <MdCheckCircle className="text-lg" />
               Completar

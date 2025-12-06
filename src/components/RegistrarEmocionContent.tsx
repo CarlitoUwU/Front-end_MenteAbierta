@@ -99,12 +99,18 @@ export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
                 Esta nota está encriptada y solo tú puedes verla
               </p>
               <textarea
-                className="w-full h-32 p-4 rounded-lg outline-none resize-none"
+                className="w-full h-32 p-4 rounded-lg outline-none resize-none border transition-colors"
                 placeholder="¿Qué está pasando en tu día? ¿Hay algo específico que causó esta emoción?"
                 maxLength={500}
-                style={{ backgroundColor: COLORS.claro, color: COLORS.texto_medio }}
+                style={{ 
+                  backgroundColor: COLORS.claro, 
+                  color: COLORS.texto_oscuro,
+                  borderColor: COLORS.gris_claro
+                }}
                 value={textoNota}
                 onChange={handleChangeNota}
+                onFocus={(e) => e.currentTarget.style.borderColor = COLORS.azul}
+                onBlur={(e) => e.currentTarget.style.borderColor = COLORS.gris_claro}
               />
               <div className="text-right text-sm mt-1" style={{ color: COLORS.texto_medio }}>{textoNota.length} / 500 caracteres</div>
             </div>
@@ -113,21 +119,45 @@ export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
 
         <div className="flex items-center gap-4 mt-6">
           <button 
-            className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${
-              mostrarCaja && !guardando
-                ? "bg-purple-600 text-white hover:bg-purple-700 cursor-pointer" 
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+            className="flex-1 py-3 rounded-lg font-semibold transition-all"
+            style={{
+              backgroundColor: mostrarCaja && !guardando ? COLORS.azul : COLORS.gris_medio,
+              color: mostrarCaja && !guardando ? 'white' : COLORS.texto_medio,
+              cursor: mostrarCaja && !guardando ? 'pointer' : 'not-allowed'
+            }}
             onClick={handleGuardar}
             disabled={!mostrarCaja || guardando}
+            onMouseEnter={(e) => {
+              if (mostrarCaja && !guardando) {
+                e.currentTarget.style.backgroundColor = COLORS.azul_semi;
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (mostrarCaja && !guardando) {
+                e.currentTarget.style.backgroundColor = COLORS.azul;
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }
+            }}
           >
             {guardando ? "Guardando..." : "Guardar registro"}
           </button>
           <button 
-            className={`w-[200px] hover:underline ${mostrarCaja ? "cursor-pointer" : "cursor-not-allowed"}`}
-            style={{ color: COLORS.texto_medio }}
+            className="w-[200px] transition-all"
+            style={{ 
+              color: mostrarCaja ? COLORS.azul : COLORS.gris_medio,
+              cursor: mostrarCaja ? 'pointer' : 'not-allowed'
+            }}
             onClick={handleCancelar}
             disabled={!mostrarCaja}
+            onMouseEnter={(e) => {
+              if (mostrarCaja) e.currentTarget.style.textDecoration = 'underline';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.textDecoration = 'none';
+            }}
           >
             Cancelar
           </button>
