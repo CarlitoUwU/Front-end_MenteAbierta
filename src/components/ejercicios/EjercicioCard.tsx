@@ -1,4 +1,4 @@
-import { MdAccessTime } from "react-icons/md";
+import { MdAccessTime, MdCheckCircle } from "react-icons/md";
 import { COLORS } from "../../constants/colors";
 
 type EjercicioCardProps = {
@@ -10,9 +10,10 @@ type EjercicioCardProps = {
   icono: React.ComponentType<{ className?: string }>;
   colorIcono: string;
   colorFondo: string;
+  onCompletar?: () => void;
 };
 
-export const EjercicioCard = ({ id, icono, colorFondo, colorIcono, titulo, descripcion, duracion, categoria }: EjercicioCardProps) => {
+export const EjercicioCard = ({ id, icono, colorFondo, colorIcono, titulo, descripcion, duracion, categoria, onCompletar }: EjercicioCardProps) => {
   const IconoEjercicio = icono;
 
   return (
@@ -41,14 +42,25 @@ export const EjercicioCard = ({ id, icono, colorFondo, colorIcono, titulo, descr
           <MdAccessTime className="text-lg" />
           <span className="text-sm font-medium">{duracion}</span>
         </div>
-        <span
-          className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full"
-          style={
-            { background: COLORS.azul_claro, color: COLORS.texto_oscuro }
-          }
-        >
-          {categoria}
-        </span>
+        <div className="flex items-center gap-3">
+          <span
+            className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full"
+            style={
+              { background: COLORS.azul_claro, color: COLORS.texto_oscuro }
+            }
+          >
+            {categoria}
+          </span>
+          {onCompletar && (
+            <button
+              onClick={onCompletar}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              <MdCheckCircle className="text-lg" />
+              Completar
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
