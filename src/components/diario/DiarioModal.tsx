@@ -1,5 +1,6 @@
 import { MdClose } from "react-icons/md";
 import { COLORS } from "../../constants/colors";
+import type { HumorLevel } from "../../types";
 
 type DiarioModalProps = {
   handleCerrar: () => void;
@@ -7,16 +8,28 @@ type DiarioModalProps = {
   value: {
     titulo: string;
     contenido: string;
+    humor: HumorLevel;
   };
   onChange: {
     setTitulo: (titulo: string) => void;
     setContenido: (contenido: string) => void;
+    setHumor: (humor: HumorLevel) => void;
   };
+  isEditing?: boolean;
+  isSubmitting?: boolean;
 };
 
-export const DiarioModal = ({ handleCerrar, handleSubmit, value, onChange }: DiarioModalProps) => {
-  const { titulo, contenido } = value;
-  const { setTitulo, setContenido } = onChange;
+export const DiarioModal = ({ handleCerrar, handleSubmit, value, onChange, isEditing = false, isSubmitting = false }: DiarioModalProps) => {
+  const { titulo, contenido, humor } = value;
+  const { setTitulo, setContenido, setHumor } = onChange;
+
+  const humorOptions = [
+    { value: 1 as HumorLevel, label: '😢 Muy Mal', color: 'bg-red-500' },
+    { value: 2 as HumorLevel, label: '😟 Mal', color: 'bg-orange-500' },
+    { value: 3 as HumorLevel, label: '😐 Neutral', color: 'bg-yellow-500' },
+    { value: 4 as HumorLevel, label: '🙂 Bien', color: 'bg-green-500' },
+    { value: 5 as HumorLevel, label: '😄 Muy Bien', color: 'bg-blue-500' },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -36,7 +49,7 @@ export const DiarioModal = ({ handleCerrar, handleSubmit, value, onChange }: Dia
             className="text-xl font-semibold"
             style={{ color: COLORS.texto_oscuro }}
           >
-            Nueva entrada
+            {isEditing ? 'Editar entrada' : 'Nueva entrada'}
           </h2>
 
           <button
@@ -63,6 +76,30 @@ export const DiarioModal = ({ handleCerrar, handleSubmit, value, onChange }: Dia
               color: COLORS.texto_oscuro,
             }}
           />
+          
+          {/* Selector de humor */}
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: COLORS.texto_medio }}>
+              ¿Cómo te sientes?
+            </label>
+            <div className="flex gap-2">
+              {humorOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setHumor(option.value)}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                    humor === option.value
+                      ? `${option.color} text-white shadow-lg scale-105`
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <textarea
             rows={5}
             placeholder="Escribe tu entrada..."
@@ -79,13 +116,16 @@ export const DiarioModal = ({ handleCerrar, handleSubmit, value, onChange }: Dia
 
         <button
           onClick={handleSubmit}
-          className="w-full mt-5 py-3 rounded-lg font-semibold transition-all hover:brightness-110 shadow-md cursor-pointer"
+          disabled={isSubmitting}
+          className={`w-full mt-5 py-3 rounded-lg font-semibold transition-all shadow-md ${
+            isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:brightness-110 cursor-pointer'
+          }`}
           style={{
             backgroundColor: COLORS.azul,
             color: COLORS.texto_claro,
           }}
         >
-          Crear entrada
+          {isSubmitting ? 'Guardando...' : (isEditing ? 'Actualizar entrada' : 'Crear entrada')}
         </button>
       </div>
     </div>
