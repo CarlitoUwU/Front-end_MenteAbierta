@@ -1,72 +1,68 @@
 import type { DashboardContentProps } from "../@types/dashboard";
 import { CategoriasContent } from "./ui/CategoriasContent";
 import { CategoriaItem } from "./ui/CatergoriaItem";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { SearchBard } from "./ui/SearchBard";
 import { COLORS } from "../constants/colors";
 import { ContenidoHeader } from "./contenido/ContenidoHeader";
 import { ArticuloCard } from "./contenido/ArticuloCard";
+import { contenidoService } from "../services/contenido.service";
+import toast from "react-hot-toast";
+import type { Articulo, CategoriaArticulo } from "../types";
 
-type Categoria = "Todos" | "Ansiedad" | "Estrés" | "Sueño" | "Relaciones" | "Autocuidado";
+type Categoria = "TODOS" | "ANSIEDAD" | "ESTRES" | "SUENO" | "RELACIONES" | "AUTOCUIDADO" | "GENERAL";
 
-type Articulo = {
-  id: string;
-  categoria: Categoria;
-  duracion: string;
-  titulo: string;
-  descripcion: string;
-  imgSrc: string;
-}
-
-const Articulos: Articulo[] = [
-  {
-    id: "articulo-1",
-    categoria: "Ansiedad",
-    duracion: "8 min",
-    titulo: "Comprendiendo la Ansiedad: Una Guía Completa",
-    descripcion: "Aprende qué es la ansiedad, sus síntomas y estrategias efectivas para manejarla en tu vida diaria.",
-    imgSrc: "https://i.ibb.co/pvrhh2G8/f9573a86d50588bcb22b3222ac945b4a6e370c63.jpg",
-  },
-  {
-    id: "articulo-2",
-    categoria: "Estrés",
-    duracion: "6 min",
-    titulo: "Técnicas de Relajación para el Día a Día",
-    descripcion: "Descubre técnicas simples que puedes usar en cualquier momento para reducir el estrés.",
-    imgSrc: "https://i.ibb.co/TMSDPBRc/18be99baa82e7eb85e82d63513ea1126c582112c.jpg",
-  },
-  {
-    id: "articulo-3",
-    categoria: "Sueño",
-    duracion: "10 min",
-    titulo: "La Importancia del Sueño para tu Bienestar",
-    descripcion: "Explora cómo el sueño afecta tu salud y aprende a mejorar tu higiene del sueño.",
-    imgSrc: "https://i.ibb.co/VK6KVQW/fd37b48ef6eef5beee40a39db8171b467abb406f.jpg",
-  },
-  {
-    id: "articulo-4",
-    categoria: "Relaciones",
-    duracion: "7 min",
-    titulo: "Construyendo Relaciones Saludables",
-    descripcion: "Consejos prácticos para cultivar conexiones significativas y mantener límites saludables.",
-    imgSrc: "https://i.ibb.co/gLbhMVDX/1ff8ee7d96205008412d947f63f16f9123831a3e.jpg",
-  },
-];
+const CATEGORIA_LABELS: Record<Categoria, string> = {
+  TODOS: "Todos",
+  ANSIEDAD: "Ansiedad",
+  ESTRES: "Estrés",
+  SUENO: "Sueño",
+  RELACIONES: "Relaciones",
+  AUTOCUIDADO: "Autocuidado",
+  GENERAL: "General",
+};
 
 export const ContenidoContent = (_props: DashboardContentProps) => {
-  const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("Todos");
+  const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("TODOS");
   const [searchTerm, setSearchTerm] = useState("");
-  const categorias: Categoria[] = ["Todos", "Ansiedad", "Estrés", "Sueño", "Relaciones", "Autocuidado"];
+  const [articulos, setArticulos] = useState<Articulo[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const categorias: Categoria[] = ["TODOS", "ANSIEDAD", "ESTRES", "SUENO", "RELACIONES", "AUTOCUIDADO", "GENERAL"];
+
+  // Cargar artículos del backend
+  useEffect(() => {
+    const cargarArticulos = async () => {
+      try {
+        const categoria = categoriaActiva === "TODOS" ? undefined : categoriaActiva as CategoriaArticulo;
+        const data = await contenidoService.getArticulos(categoria);
+        console.log("📚 Artículos cargados:", data);
+        setArticulos(data);
+      } catch (error: any) {
+        console.error("❌ Error al cargar artículos:", error);
+        toast.error(error.response?.data?.detail || "Error al cargar artículos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarArticulos();
+  }, [categoriaActiva]);
 
   const articulosFiltered: Articulo[] = useMemo(() => {
-    const articulosPorCategoria = categoriaActiva === "Todos"
-      ? Articulos
-      : Articulos.filter(articulo => articulo.categoria === categoriaActiva);
-
-    return articulosPorCategoria.filter((entrada) =>
-      entrada.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+    return articulos.filter((articulo) =>
+      articulo.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      articulo.resumen?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm, categoriaActiva]);
+  }, [searchTerm, articulos]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Cargando artículos...</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -77,16 +73,40 @@ export const ContenidoContent = (_props: DashboardContentProps) => {
       <SearchBard value={searchTerm} onChange={setSearchTerm} placeholder={"Buscar artículos..."} />
 
       <CategoriasContent>
-        {categorias.map(categoria =>
-          <CategoriaItem key={categoria} categoria={categoria} isActiva={categoria === categoriaActiva} onClick={() => setCategoriaActiva(categoria)} />
-        )}
+        {categorias.map(categoria => (
+          <CategoriaItem 
+            key={categoria} 
+            categoria={CATEGORIA_LABELS[categoria]} 
+            isActiva={categoria === categoriaActiva} 
+            onClick={() => setCategoriaActiva(categoria)} 
+          />
+        ))}
       </CategoriasContent>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {articulosFiltered.map(articulo =>
-          <ArticuloCard key={articulo.id} {...articulo} />
-        )}
+        {articulosFiltered.map(articulo => (
+          <ArticuloCard 
+            key={articulo.id}
+            id={String(articulo.id)}
+            categoria={CATEGORIA_LABELS[articulo.categoria]}
+            duracion={articulo.tiempo_lectura}
+            titulo={articulo.titulo}
+            descripcion={articulo.resumen}
+            imgSrc={articulo.imagen_url || "https://i.ibb.co/pvrhh2G8/f9573a86d50588bcb22b3222ac945b4a6e370c63.jpg"}
+          />
+        ))}
       </div>
+
+      {/* Mensaje cuando no hay artículos */}
+      {articulosFiltered.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">
+            {articulos.length === 0 
+              ? "No hay artículos disponibles en este momento" 
+              : "No se encontraron artículos con ese término de búsqueda"}
+          </p>
+        </div>
+      )}
     </div >
   );
 };

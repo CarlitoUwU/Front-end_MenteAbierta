@@ -5,8 +5,8 @@ export const contenidoService = {
   /**
    * Obtener todos los artículos (con filtro opcional por categoría)
    */
-  async getArticulos(categoria?: CategoriaArticulo | 'TODOS'): Promise<Articulo[]> {
-    const params = categoria && categoria !== 'TODOS' ? `?categoria=${categoria}` : '';
+  async getArticulos(categoria?: CategoriaArticulo): Promise<Articulo[]> {
+    const params = categoria ? `?categoria=${categoria}` : '';
     const response = await api.get<Articulo[]>(`/contenido/articulos/${params}`);
     return response.data;
   },
