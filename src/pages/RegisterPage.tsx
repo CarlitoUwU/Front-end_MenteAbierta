@@ -1,6 +1,59 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
+import { RoutesEnum } from '../utils/routes';
+import { authService } from '../services/auth.service';
 
 export const RegisterPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [seudonimo, setSeudonimo] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validaciones
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+
+    if (!acceptTerms) {
+      setError('Debes aceptar los términos y condiciones');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await authService.register({
+        email,
+        password,
+        seudonimo: seudonimo || undefined,
+      });
+      navigate(RoutesEnum.DASHBOARD);
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.email?.[0] || 
+                          err.response?.data?.password?.[0] ||
+                          'Error al registrarse. Intenta de nuevo.';
+      setError(errorMessage);
+      console.error('Error en registro:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f5cf] p-4">
       <div className="text-center mb-6">
@@ -25,11 +78,20 @@ export const RegisterPage = () => {
 
         <div className="text-center text-gray-500 text-sm mb-6">O regístrate con tu correo</div>
 
-        <form className="flex flex-col gap-4">
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div>
             <label className="text-gray-700 text-sm">Correo electrónico *</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               placeholder="tu@email.com"
               className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
@@ -39,6 +101,8 @@ export const RegisterPage = () => {
             <label className="text-gray-700 text-sm">Alias (opcional)</label>
             <input
               type="text"
+              value={seudonimo}
+              onChange={(e) => setSeudonimo(e.target.value)}
               placeholder="¿Cómo te gustaría que te llamemos?"
               className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
@@ -48,6 +112,9 @@ export const RegisterPage = () => {
             <label className="text-gray-700 text-sm">Contraseña *</label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               placeholder="Mínimo 8 caracteres"
               className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
@@ -57,13 +124,21 @@ export const RegisterPage = () => {
             <label className="text-gray-700 text-sm">Confirmar contraseña *</label>
             <input
               type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
               placeholder="Repite tu contraseña"
               className="mt-1 w-full border rounded-xl p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
 
           <div className="flex items-center gap-2 text-sm mt-2">
-            <input type="checkbox" className="w-4 h-4" />
+            <input 
+              type="checkbox" 
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+              className="w-4 h-4" 
+            />
             <span className="text-gray-600">
               Acepto los
               <a href="#" className="text-purple-600 ml-1 underline">
@@ -78,15 +153,18 @@ export const RegisterPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-purple-500 hover:bg-purple-600 transition text-white py-3 rounded-xl font-semibold mt-2"
+            disabled={isLoading}
+            className={`w-full text-white py-3 rounded-xl font-semibold mt-2 transition ${
+              isLoading ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-500 hover:bg-purple-600'
+            }`}
           >
-            Crear cuenta
+            {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 
         <p className="text-center text-sm mt-6 text-gray-600">
           ¿Ya tienes cuenta?
-          <a href="#" className="text-purple-600 font-semibold hover:underline ml-1">
+          <a href={RoutesEnum.LOGIN} className="text-purple-600 font-semibold hover:underline ml-1">
             Inicia sesión
           </a>
         </p>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Necesario para redirigir al Dashboard
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
-import { RoutesEnum } from '../utils/routes'; // Importamos tus rutas
+import { RoutesEnum } from '../utils/routes';
+import { authService } from '../services/auth.service';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,45 +15,17 @@ export const LoginPage = () => {
 
   // 2. FUNCIÓN DE ENVÍO: Se ejecuta al dar click en "Iniciar sesión"
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue
+    e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    navigate('/dashboard'); // solo para pruebas xd
-
-    // URL del Backend desde el archivo .env
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-
     try {
-      const response = await fetch(`${apiUrl}/api/v1/auth/login/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // --- ÉXITO ---
-        console.log("Login exitoso:", data);
-        
-        // 3. GUARDAR TOKENS: Importante para las siguientes peticiones
-        localStorage.setItem('access_token', data.access);
-        localStorage.setItem('refresh_token', data.refresh);
-
-        // 4. REDIRIGIR: Mandar al usuario al Dashboard
-        navigate(RoutesEnum.DASHBOARD);
-      } else {
-        // --- ERROR DEL BACKEND ---
-        setError('Credenciales incorrectas o error en el servidor.');
-        console.error("Error login:", data);
-      }
-    } catch (err) {
-      // --- ERROR DE RED ---
-      setError('No se pudo conectar con el servidor.');
-      console.error(err);
+      await authService.login({ email, password });
+      navigate(RoutesEnum.DASHBOARD);
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.detail || 'Error al iniciar sesión. Verifica tus credenciales.';
+      setError(errorMessage);
+      console.error('Error en login:', err);
     } finally {
       setIsLoading(false);
     }
