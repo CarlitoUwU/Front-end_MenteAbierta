@@ -1,4 +1,5 @@
 import { FiHeart, FiMessageCircle } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 import { COLORS } from "../../constants/colors";
 
 type ForoPostItemProps = {
@@ -10,9 +11,11 @@ type ForoPostItemProps = {
   text: string;
   likes: number;
   replies: number;
+  onLike?: () => void;
+  liked?: boolean;
 }
 
-export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, replies }: ForoPostItemProps) => {
+export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, replies, onLike, liked }: ForoPostItemProps) => {
   return (
     <div
       className="w-full p-5 rounded-xl shadow-md"
@@ -53,10 +56,15 @@ export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, 
         className="flex gap-6 text-sm"
         style={{ color: COLORS.texto_medio }}
       >
-        <span className="flex items-center gap-1 cursor-pointer">
-          <FiHeart /> {likes}
-        </span>
-        <span className="flex items-center gap-1 cursor-pointer">
+        <button
+          onClick={onLike}
+          className={`flex items-center gap-1 cursor-pointer transition-colors ${
+            liked ? 'text-red-500' : 'hover:text-red-500'
+          }`}
+        >
+          {liked ? <FaHeart /> : <FiHeart />} {likes}
+        </button>
+        <span className="flex items-center gap-1">
           <FiMessageCircle /> {replies} respuestas
         </span>
       </div>

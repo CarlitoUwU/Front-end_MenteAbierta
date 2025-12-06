@@ -5,8 +5,8 @@ export const foroService = {
   /**
    * Obtener todas las publicaciones (con filtro opcional por categoría)
    */
-  async getPublicaciones(categoria?: CategoriaForo | 'TODOS'): Promise<Publicacion[]> {
-    const params = categoria && categoria !== 'TODOS' ? `?categoria=${categoria}` : '';
+  async getPublicaciones(categoria?: CategoriaForo): Promise<Publicacion[]> {
+    const params = categoria ? `?categoria=${categoria}` : '';
     const response = await api.get<Publicacion[]>(`/foro/publicaciones/${params}`);
     return response.data;
   },
