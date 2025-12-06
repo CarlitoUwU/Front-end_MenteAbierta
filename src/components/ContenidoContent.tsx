@@ -6,6 +6,7 @@ import { SearchBard } from "./ui/SearchBard";
 import { COLORS } from "../constants/colors";
 import { ContenidoHeader } from "./contenido/ContenidoHeader";
 import { ArticuloCard } from "./contenido/ArticuloCard";
+import { ArticuloModal } from "./contenido/ArticuloModal";
 import { contenidoService } from "../services/contenido.service";
 import toast from "react-hot-toast";
 import type { Articulo, CategoriaArticulo } from "../types";
@@ -27,6 +28,8 @@ export const ContenidoContent = (_props: DashboardContentProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [articulos, setArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [articuloSeleccionado, setArticuloSeleccionado] = useState<Articulo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categorias: Categoria[] = ["TODOS", "ANSIEDAD", "ESTRES", "SUENO", "RELACIONES", "AUTOCUIDADO", "GENERAL"];
 
@@ -48,6 +51,17 @@ export const ContenidoContent = (_props: DashboardContentProps) => {
 
     cargarArticulos();
   }, [categoriaActiva]);
+
+  const handleAbrirArticulo = async (id: number) => {
+    try {
+      const articulo = await contenidoService.getArticulo(id);
+      setArticuloSeleccionado(articulo);
+      setIsModalOpen(true);
+    } catch (error: any) {
+      console.error("❌ Error al cargar artículo:", error);
+      toast.error(error.response?.data?.detail || "Error al cargar artículo");
+    }
+  };
 
   const articulosFiltered: Articulo[] = useMemo(() => {
     return articulos.filter((articulo) =>
@@ -93,6 +107,7 @@ export const ContenidoContent = (_props: DashboardContentProps) => {
             titulo={articulo.titulo}
             descripcion={articulo.resumen}
             imgSrc={articulo.imagen_url || "https://i.ibb.co/pvrhh2G8/f9573a86d50588bcb22b3222ac945b4a6e370c63.jpg"}
+            onClick={() => handleAbrirArticulo(articulo.id)}
           />
         ))}
       </div>
@@ -106,6 +121,23 @@ export const ContenidoContent = (_props: DashboardContentProps) => {
               : "No se encontraron artículos con ese término de búsqueda"}
           </p>
         </div>
+      )}
+
+      {/* Modal de artículo completo */}
+      {articuloSeleccionado && (
+        <ArticuloModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setArticuloSeleccionado(null);
+          }}
+          imgSrc={articuloSeleccionado.imagen_url || "https://i.ibb.co/pvrhh2G8/f9573a86d50588bcb22b3222ac945b4a6e370c63.jpg"}
+          categoria={CATEGORIA_LABELS[articuloSeleccionado.categoria]}
+          duracion={articuloSeleccionado.tiempo_lectura}
+          titulo={articuloSeleccionado.titulo}
+          contenido={articuloSeleccionado.contenido}
+          fechaPublicacion={articuloSeleccionado.fecha_publicacion}
+        />
       )}
     </div >
   );

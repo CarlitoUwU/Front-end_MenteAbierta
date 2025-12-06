@@ -2,23 +2,28 @@ import { MdAccessTime } from "react-icons/md";
 import { COLORS } from "../../constants/colors";
 
 type ArticuloCardProps = {
+  id: string;
   imgSrc: string;
   categoria: string;
   duracion: string;
   titulo: string;
   descripcion: string;
+  onClick?: () => void;
 };
 
 export const ArticuloCard = ({
+  id,
   imgSrc,
   categoria,
   duracion,
   titulo,
   descripcion,
+  onClick,
 }: ArticuloCardProps) => {
   return (
-    <div
-      className="rounded-lg shadow overflow-hidden"
+    <button
+      onClick={onClick}
+      className="rounded-lg shadow overflow-hidden hover:shadow-xl transition-shadow text-left w-full"
       style={{ backgroundColor: COLORS.azul }}
     >
       <img
@@ -66,6 +71,6 @@ export const ArticuloCard = ({
           {descripcion}
         </p>
       </div>
-    </div>
+    </button>
   );
 };

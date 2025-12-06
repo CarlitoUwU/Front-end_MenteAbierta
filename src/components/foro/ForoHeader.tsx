@@ -1,7 +1,11 @@
 import { FiPlus } from "react-icons/fi";
 import { COLORS } from "../../constants/colors";
 
-export const ForoHeader = () => {
+type ForoHeaderProps = {
+  onNuevaPublicacion?: () => void;
+};
+
+export const ForoHeader = ({ onNuevaPublicacion }: ForoHeaderProps) => {
   return (
     <>
       <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-3">
@@ -13,6 +17,7 @@ export const ForoHeader = () => {
         </h1>
 
         <button
+          onClick={onNuevaPublicacion}
           className="flex items-center gap-2 px-4 py-2 rounded-xl transition text-white self-start cursor-pointer md:self-auto"
           style={{ backgroundColor: COLORS.azul }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.azul_semi)}

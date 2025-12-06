@@ -13,9 +13,10 @@ type ForoPostItemProps = {
   replies: number;
   onLike?: () => void;
   liked?: boolean;
+  onVerComentarios?: () => void;
 }
 
-export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, replies, onLike, liked }: ForoPostItemProps) => {
+export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, replies, onLike, liked, onVerComentarios }: ForoPostItemProps) => {
   return (
     <div
       className="w-full p-5 rounded-xl shadow-md"
@@ -64,9 +65,12 @@ export const ForoPostItem = ({ user, name, time, categoria, title, text, likes, 
         >
           {liked ? <FaHeart /> : <FiHeart />} {likes}
         </button>
-        <span className="flex items-center gap-1">
+        <button
+          onClick={onVerComentarios}
+          className="flex items-center gap-1 cursor-pointer hover:text-purple-600 transition-colors"
+        >
           <FiMessageCircle /> {replies} respuestas
-        </span>
+        </button>
       </div>
     </div>
   );

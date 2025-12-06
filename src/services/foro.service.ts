@@ -45,6 +45,17 @@ export const foroService = {
   },
 
   /**
+   * Obtener comentarios de una publicación
+   * Nota: Los comentarios están incluidos en la respuesta de getPublicacion
+   */
+  async getComentarios(id: number): Promise<Comentario[]> {
+    const publicacion = await this.getPublicacion(id);
+    // Asumiendo que la publicación tiene comentarios anidados
+    // Si no, necesitaremos verificar la estructura de la respuesta del backend
+    return (publicacion as any).comentarios || [];
+  },
+
+  /**
    * Toggle like en una publicación
    */
   async toggleLike(id: number): Promise<{ liked: boolean; total_likes: number }> {
