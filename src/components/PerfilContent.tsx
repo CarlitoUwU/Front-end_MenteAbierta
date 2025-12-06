@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MdPerson,
   MdEmail,
@@ -10,19 +10,73 @@ import {
   MdExitToApp,
 } from "react-icons/md";
 import type { DashboardContentProps } from "../@types/dashboard";
+import { authService } from "../services/auth.service";
+import type { Usuario } from "../types";
 
 export const PerfilContent = (_props: DashboardContentProps) => {
   const [notificacionesEmail, setNotificacionesEmail] = useState(false);
   const [notificacionesPush, setNotificacionesPush] = useState(false);
   const [resumenSemanal, setResumenSemanal] = useState(true);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar datos del usuario al montar el componente
+  useEffect(() => {
+    const cargarPerfil = async () => {
+      try {
+        const perfil = await authService.getProfile();
+        setUsuario(perfil);
+      } catch (error) {
+        console.error("Error al cargar perfil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarPerfil();
+  }, []);
 
   const handleGuardarCambios = () => {
     console.log("Guardando cambios...");
   };
 
   const handleCerrarSesion = () => {
-    console.log("Cerrando sesión...");
+    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+      authService.logout();
+    }
   };
+
+  // Obtener iniciales del usuario para el avatar
+  const getIniciales = () => {
+    if (usuario?.seudonimo) {
+      return usuario.seudonimo.charAt(0).toUpperCase();
+    }
+    if (usuario?.email) {
+      return usuario.email.charAt(0).toUpperCase();
+    }
+    return "U";
+  };
+
+  // Formatear fecha de registro
+  const getFechaRegistro = () => {
+    if (!usuario?.date_joined) return "Fecha no disponible";
+    
+    const fecha = new Date(usuario.date_joined);
+    const meses = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+    
+    return `Miembro desde ${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Cargando perfil...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -38,13 +92,15 @@ export const PerfilContent = (_props: DashboardContentProps) => {
           <div className="flex flex-col items-center space-y-6">
             {/* Avatar */}
             <div className="w-32 h-32 bg-green-600 rounded-full flex items-center justify-center">
-              <span className="text-5xl font-bold text-white">U</span>
+              <span className="text-5xl font-bold text-white">{getIniciales()}</span>
             </div>
 
             {/* Nombre y membresía */}
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800">user123</h2>
-              <p className="text-sm text-gray-500 mt-1">Miembro desde enero 2024</p>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {usuario?.seudonimo || usuario?.email?.split('@')[0] || 'Usuario'}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">{getFechaRegistro()}</p>
             </div>
 
             {/* Estadísticas */}
@@ -69,13 +125,14 @@ export const PerfilContent = (_props: DashboardContentProps) => {
               {/* Nombre de usuario */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre de usuario
+                  Nombre de usuario / Seudónimo
                 </label>
                 <div className="flex items-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
                   <MdPerson className="text-xl text-gray-500" />
                   <input
                     type="text"
-                    defaultValue="user123"
+                    value={usuario?.seudonimo || 'Sin seudónimo'}
+                    readOnly
                     className="flex-1 bg-transparent outline-none text-gray-800"
                   />
                 </div>
@@ -90,7 +147,8 @@ export const PerfilContent = (_props: DashboardContentProps) => {
                   <MdEmail className="text-xl text-gray-500" />
                   <input
                     type="email"
-                    defaultValue="user@ejemplo.com"
+                    value={usuario?.email || ''}
+                    readOnly
                     className="flex-1 bg-transparent outline-none text-gray-800"
                   />
                 </div>
@@ -242,7 +300,7 @@ export const PerfilContent = (_props: DashboardContentProps) => {
       <div className="pt-4">
         <button
           onClick={handleCerrarSesion}
-          className="flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors shadow-md hover:shadow-lg"
         >
           <MdExitToApp className="text-2xl" />
           <span className="font-semibold">Cerrar sesión</span>
