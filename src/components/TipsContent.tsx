@@ -1,60 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { DashboardContentProps } from "../@types/dashboard";
 import { CategoriasContent } from "./ui/CategoriasContent";
 import { CategoriaItem } from "./ui/CatergoriaItem";
 import { TipsContenedor } from "./tips/TipsContenedor";
 import { TipsMainCard } from "./tips/TipsMainCard";
 import { TipsCard } from "./tips/TipsCard";
+import { tipsService } from "../services/tips.service";
+import toast from "react-hot-toast";
+import type { Tip, CategoriaTip } from "../types";
 
-type Categoria = "Todos" | "Diario" | "Estrés" | "Sueño" | "Bienestar";
+type Categoria = "TODOS" | "DIARIO" | "ESTRES" | "SUENO" | "BIENESTAR";
 
-interface Tip {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  categoria: Categoria;
-}
+const CATEGORIA_LABELS: Record<Categoria, string> = {
+  TODOS: "Todos",
+  DIARIO: "Diario",
+  ESTRES: "Estrés",
+  SUENO: "Sueño",
+  BIENESTAR: "Bienestar",
+};
 
 export const TipsContent = (_props: DashboardContentProps) => {
-  const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("Todos");
+  const [categoriaActiva, setCategoriaActiva] = useState<Categoria>("TODOS");
   const [tipActualIndex, setTipActualIndex] = useState(0);
-  const categorias: Categoria[] = ["Todos", "Diario", "Estrés", "Sueño", "Bienestar"];
-  const tips: Tip[] = [
-    {
-      id: "gratitud-matutina",
-      titulo: "Práctica de gratitud matutina",
-      descripcion: "Comienza tu día escribiendo tres cosas por las que estás agradecido. Esta práctica simple puede mejorar significativamente tu estado de ánimo.",
-      categoria: "Diario",
-    },
-    {
-      id: "cinco-sentidos",
-      titulo: "Técnica de los 5 sentidos",
-      descripcion: "Cuando te sientas abrumado, identifica: 5 cosas que ves, 4 que tocas, 3 que escuchas, 2 que hueles y 1 que saboreas. Te ayudará a volver al presente.",
-      categoria: "Estrés",
-    },
-    {
-      id: "rutina-desconexion",
-      titulo: "Rutina de desconexión",
-      descripcion: "Apaga las pantallas 1 hora antes de dormir. La luz azul puede interferir con tu ciclo de sueño natural y afectar la calidad de tu descanso.",
-      categoria: "Sueño",
-    },
-    {
-      id: "respiracion-consciente",
-      titulo: "Respiración consciente",
-      descripcion: "Dedica 5 minutos cada mañana a respirar profundamente. Esto oxigena tu cerebro y te prepara para enfrentar el día con más calma.",
-      categoria: "Bienestar",
-    },
-  ];
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const tipsFiltrados = categoriaActiva === "Todos"
-    ? tips
-    : tips.filter((tip) => tip.categoria === categoriaActiva);
+  const categorias: Categoria[] = ["TODOS", "DIARIO", "ESTRES", "SUENO", "BIENESTAR"];
 
-  const tipActual = tipsFiltrados[tipActualIndex] || tips[0];
+  // Cargar tips del backend
+  useEffect(() => {
+    const cargarTips = async () => {
+      try {
+        const categoria = categoriaActiva === "TODOS" ? undefined : categoriaActiva;
+        const data = await tipsService.getAll(categoria);
+        console.log("💡 Tips cargados:", data);
+        setTips(data);
+        setTipActualIndex(0); // Resetear al primer tip cuando cambia la categoría
+      } catch (error: any) {
+        console.error("❌ Error al cargar tips:", error);
+        toast.error(error.response?.data?.detail || "Error al cargar tips");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarTips();
+  }, [categoriaActiva]);
+
+  const tipsFiltrados = tips; // Ya están filtrados por el backend
+
+  const tipActual = tipsFiltrados[tipActualIndex] || tipsFiltrados[0];
 
   const siguienteTip = () => {
     setTipActualIndex((prev) => (prev + 1) % tipsFiltrados.length);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Cargando tips...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -67,25 +74,48 @@ export const TipsContent = (_props: DashboardContentProps) => {
       </div>
 
       <CategoriasContent>
-        {categorias.map(categoria =>
-          <CategoriaItem key={categoria} categoria={categoria} isActiva={categoria === categoriaActiva} onClick={() => setCategoriaActiva(categoria)} />
-        )}
+        {categorias.map(categoria => (
+          <CategoriaItem 
+            key={categoria} 
+            categoria={CATEGORIA_LABELS[categoria]} 
+            isActiva={categoria === categoriaActiva} 
+            onClick={() => setCategoriaActiva(categoria)} 
+          />
+        ))}
       </CategoriasContent>
 
       <TipsContenedor>
-        <TipsMainCard
-          titulo={tipActual.titulo}
-          descripcion={tipActual.descripcion}
-          index={tipActualIndex + 1}
-          total={tipsFiltrados.length}
-          onClick={siguienteTip}
-        />
+        {tipsFiltrados.length > 0 ? (
+          <>
+            <TipsMainCard
+              titulo={tipActual.titulo}
+              descripcion={tipActual.contenido}
+              index={tipActualIndex + 1}
+              total={tipsFiltrados.length}
+              onClick={siguienteTip}
+            />
 
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {tipsFiltrados.map((tip, index) =>
-            <TipsCard key={tip.id} {...tip} isActive={tip.id === tipActual.id} onClick={() => setTipActualIndex(index)} />
-          )}
-        </div>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {tipsFiltrados.map((tip, index) => (
+                <TipsCard 
+                  key={tip.id} 
+                  id={String(tip.id)}
+                  titulo={tip.titulo}
+                  descripcion={tip.contenido}
+                  categoria={CATEGORIA_LABELS[tip.categoria]}
+                  isActive={tip.id === tipActual.id} 
+                  onClick={() => setTipActualIndex(index)} 
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              No hay tips disponibles en este momento
+            </p>
+          </div>
+        )}
       </TipsContenedor>
     </div>
   );

@@ -3,10 +3,10 @@ import type { Tip } from '../types';
 
 export const tipsService = {
   /**
-   * Obtener todos los tips
+   * Obtener todos los tips (con filtro opcional por categoría)
    */
   async getAll(categoria?: string): Promise<Tip[]> {
-    const params = categoria && categoria !== 'TODOS' ? `?categoria=${categoria}` : '';
+    const params = categoria ? `?categoria=${categoria}` : '';
     const response = await api.get<Tip[]>(`/tips/${params}`);
     return response.data;
   },
