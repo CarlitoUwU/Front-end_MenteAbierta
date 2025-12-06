@@ -23,10 +23,13 @@ export const PerfilContent = (_props: DashboardContentProps) => {
   useEffect(() => {
     const cargarPerfil = async () => {
       try {
+        console.log("🔍 Intentando cargar perfil...");
         const perfil = await authService.getProfile();
+        console.log("✅ Perfil recibido:", perfil);
         setUsuario(perfil);
-      } catch (error) {
-        console.error("Error al cargar perfil:", error);
+      } catch (error: any) {
+        console.error("❌ Error al cargar perfil:", error);
+        console.error("❌ Detalles del error:", error.response?.data);
       } finally {
         setLoading(false);
       }
@@ -142,22 +145,6 @@ export const PerfilContent = (_props: DashboardContentProps) => {
                     value={usuario?.email || ''}
                     readOnly
                     className="flex-1 bg-transparent outline-none text-gray-800"
-                  />
-                </div>
-              </div>
-
-              {/* ID de usuario (UUID) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID de usuario
-                </label>
-                <div className="flex items-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
-                  <MdPerson className="text-xl text-gray-500" />
-                  <input
-                    type="text"
-                    value={usuario?.id || ''}
-                    readOnly
-                    className="flex-1 bg-transparent outline-none text-gray-600 text-sm font-mono"
                   />
                 </div>
               </div>

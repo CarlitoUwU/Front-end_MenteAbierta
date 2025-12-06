@@ -11,7 +11,19 @@ export const authService = {
     // Guardar tokens en localStorage
     localStorage.setItem('access_token', response.data.access);
     localStorage.setItem('refresh_token', response.data.refresh);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
+    
+    // Actualizar el header por defecto de axios INMEDIATAMENTE
+    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+    
+    // Obtener perfil completo y guardarlo
+    try {
+      const userProfile = await this.getProfile();
+      localStorage.setItem('user', JSON.stringify(userProfile));
+    } catch (error) {
+      console.error('Error al obtener perfil después del registro:', error);
+      // Si falla, al menos guardamos los datos básicos del registro
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
     
     return response.data;
   },
@@ -22,11 +34,14 @@ export const authService = {
   async login(data: LoginData): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/login/', data);
     
-    // Guardar tokens
+    // Guardar tokens PRIMERO
     localStorage.setItem('access_token', response.data.access);
     localStorage.setItem('refresh_token', response.data.refresh);
     
-    // Obtener y guardar perfil completo del usuario
+    // Actualizar el header por defecto de axios INMEDIATAMENTE
+    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+    
+    // Ahora sí obtener y guardar perfil completo del usuario
     try {
       const userProfile = await this.getProfile();
       localStorage.setItem('user', JSON.stringify(userProfile));
@@ -41,7 +56,12 @@ export const authService = {
    * Obtener perfil del usuario autenticado
    */
   async getProfile(): Promise<Usuario> {
-    const response = await api.get<Usuario>('/user/me/');
+    const token = localStorage.getItem('access_token');
+    const response = await api.get<Usuario>('/user/me/', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   },
 
