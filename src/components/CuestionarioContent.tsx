@@ -1,112 +1,145 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import type { DashboardContentProps } from "../@types/dashboard";
 import { PreguntaCard } from "./cuestionario/PreguntaCard";
 import { PreguntaModal } from "./cuestionario/PreguntaModal";
 import { PreguntaItem } from "./cuestionario/PreguntaItem";
 import { OpcionItem } from "./cuestionario/OpcionItem";
 import { InputSlider } from "./ui/InputSlider";
-import { cuestionarios_data, preguntas_data } from "../data/cuestionario.json";
+import { cuestionariosService } from "../services/cuestionarios.service";
+import type { Cuestionario, Pregunta } from "../types";
 
-
-interface Cuestionario {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  duracion: string;
-  preguntas: number;
-}
-
-interface RespuestaRegistroDiario {
-  pregunta1: number;
-  pregunta2: number;
-  pregunta3: number;
-  pregunta4: number;
-  pregunta5: number;
-  pregunta6: number;
-}
 
 export const CuestionarioContent = (_props: DashboardContentProps) => {
-  const [cuestionarioActivo, setCuestionarioActivo] = useState<string | null>(null);
-  const [respuestas, setRespuestas] = useState<RespuestaRegistroDiario>({
-    pregunta1: 5,
-    pregunta2: 0,
-    pregunta3: 1,
-    pregunta4: 0,
-    pregunta5: 0,
-    pregunta6: 0,
-  });
+  const [cuestionarioActivo, setCuestionarioActivo] = useState<number | null>(null);
+  const [cuestionarios, setCuestionarios] = useState<Cuestionario[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [enviando, setEnviando] = useState(false);
+  const [respuestas, setRespuestas] = useState<Record<number, number>>({});
 
-  const cuestionarios: Cuestionario[] = cuestionarios_data;
+  // Cargar cuestionarios del backend
+  useEffect(() => {
+    const cargarCuestionarios = async () => {
+      try {
+        const data = await cuestionariosService.getAll();
+        setCuestionarios(data);
+      } catch (error) {
+        console.error("Error al cargar cuestionarios:", error);
+        toast.error("Error al cargar los cuestionarios");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const preguntas = preguntas_data as {
-    id: number;
-    label: string;
-    type: "scale" | "options";
-    options?: string[];
-  }[];
+    cargarCuestionarios();
+  }, []);
 
-  const handleComenzarCuestionario = (id: string) => {
+  const handleComenzarCuestionario = (id: number) => {
     setCuestionarioActivo(id);
+    // Inicializar respuestas con valores por defecto
+    const cuestionario = cuestionarios.find(c => c.id === id);
+    if (cuestionario) {
+      const respuestasIniciales: Record<number, number> = {};
+      cuestionario.preguntas.forEach(p => {
+        respuestasIniciales[p.id] = p.tipo_pregunta === 'ESCALA' ? 5 : 0;
+      });
+      setRespuestas(respuestasIniciales);
+    }
   };
 
   const handleCerrarCuestionario = () => {
     setCuestionarioActivo(null);
   };
 
-  const handleEnviarRegistroDiario = () => {
-    console.log("Respuestas enviadas:", respuestas);
-    // Aquí se enviarían las respuestas al backend
+  const handleEnviarCuestionario = async () => {
+    setEnviando(true);
+    try {
+      // Enviar cada respuesta al backend
+      const promesas = Object.entries(respuestas).map(([preguntaId, valor]) =>
+        cuestionariosService.responder({
+          pregunta: parseInt(preguntaId),
+          valor_respuesta: valor,
+        })
+      );
+
+      await Promise.all(promesas);
+      toast.success("Cuestionario completado exitosamente");
+      setCuestionarioActivo(null);
+      setRespuestas({});
+    } catch (error: any) {
+      console.error("Error al enviar cuestionario:", error);
+      toast.error(error.response?.data?.detail || "Error al enviar las respuestas");
+    } finally {
+      setEnviando(false);
+    }
   };
 
-  const actualizarRespuesta = (pregunta: keyof RespuestaRegistroDiario, valor: number) => {
-    setRespuestas(prev => ({ ...prev, [pregunta]: valor }));
+  const actualizarRespuesta = (preguntaId: number, valor: number) => {
+    setRespuestas(prev => ({ ...prev, [preguntaId]: valor }));
   };
 
-  // Modal del Registro Diario
-  if (cuestionarioActivo === "registro-diario") {
+  // Modal del cuestionario activo
+  if (cuestionarioActivo !== null) {
+    const cuestionario = cuestionarios.find(c => c.id === cuestionarioActivo);
+    if (!cuestionario) return null;
+
     return (
       <PreguntaModal
         header={
           <>
-            <span className="font-semibold text-purple-900">Importante:</span> Este registro diario te ayudará a conocer mejor tu estado emocional y tus hábitos de bienestar. Responder te tomará menos de un minuto. <span className="font-semibold">Tus respuestas no son un diagnóstico</span>, pero nos permiten ofrecerte recomendaciones personalizadas de autocuidado. Responde de la manera más honesta y cercana a cómo te has sentido hoy.
+            <span className="font-semibold text-purple-900">Importante:</span> {cuestionario.descripcion || 'Este cuestionario te ayudará a conocer mejor tu estado emocional y tus hábitos de bienestar.'} <span className="font-semibold">Tus respuestas no son un diagnóstico</span>, pero nos permiten ofrecerte recomendaciones personalizadas de autocuidado. Responde de la manera más honesta posible.
           </>
         }
         handleCerrar={handleCerrarCuestionario}
-        handleSubmit={handleEnviarRegistroDiario}
+        handleSubmit={handleEnviarCuestionario}
+        isSubmitting={enviando}
       >
-        {preguntas.filter(p => p.type === "scale").map((pregunta) => (
-          <PreguntaItem
-            key={pregunta.id}
-            label={`${pregunta.id}. ${pregunta.label}`}
-            isSlider={true}
-          >
-            <InputSlider
-              value={respuestas.pregunta1}
-              onChange={(newValue) => actualizarRespuesta("pregunta1", newValue)}
-            />
-          </PreguntaItem>
-        ))}
-
-        {preguntas.filter(p => p.type === "options").map((pregunta) => (
-          <PreguntaItem
-            key={pregunta.id}
-            label={`${pregunta.id}. ${pregunta.label}`}
-          >
-            {pregunta.options!.map((opcion, index) => (
-              <OpcionItem
-                key={index}
-                opcion={`${index}. ${opcion}`}
-                isSelected={respuestas[`pregunta${pregunta.id}` as keyof RespuestaRegistroDiario] === index}
-                onClick={() => actualizarRespuesta(`pregunta${pregunta.id}` as keyof RespuestaRegistroDiario, index)}
-              />
-            ))}
-          </PreguntaItem>
-        ))}
+        {cuestionario.preguntas
+          .sort((a, b) => a.orden - b.orden)
+          .map((pregunta) => (
+            <PreguntaItem
+              key={pregunta.id}
+              label={`${pregunta.orden}. ${pregunta.texto}`}
+              isSlider={pregunta.tipo_pregunta === 'ESCALA'}
+            >
+              {pregunta.tipo_pregunta === 'ESCALA' ? (
+                <InputSlider
+                  value={respuestas[pregunta.id] || 5}
+                  onChange={(newValue) => actualizarRespuesta(pregunta.id, newValue)}
+                  minString="Muy mal"
+                  maxString="Muy bien"
+                />
+              ) : pregunta.tipo_pregunta === 'BOOLEAN' ? (
+                <div className="flex gap-4">
+                  <OpcionItem
+                    opcion="Sí"
+                    isSelected={respuestas[pregunta.id] === 1}
+                    onClick={() => actualizarRespuesta(pregunta.id, 1)}
+                  />
+                  <OpcionItem
+                    opcion="No"
+                    isSelected={respuestas[pregunta.id] === 0}
+                    onClick={() => actualizarRespuesta(pregunta.id, 0)}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Tipo de pregunta no soportado: {pregunta.tipo_pregunta}</p>
+              )}
+            </PreguntaItem>
+          ))}
       </PreguntaModal>
     );
   }
 
   // Vista principal de cuestionarios
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Cargando cuestionarios...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -118,15 +151,25 @@ export const CuestionarioContent = (_props: DashboardContentProps) => {
       </div>
 
       {/* Grid de tarjetas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {cuestionarios.map((cuestionario) => (
-          <PreguntaCard
-            key={cuestionario.id}
-            {...cuestionario}
-            handleClickComenzar={handleComenzarCuestionario}
-          />
-        ))}
-      </div>
+      {cuestionarios.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No hay cuestionarios disponibles en este momento</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {cuestionarios.map((cuestionario) => (
+            <PreguntaCard
+              key={cuestionario.id}
+              id={cuestionario.id.toString()}
+              titulo={cuestionario.nombre}
+              descripcion={cuestionario.descripcion || ''}
+              duracion={cuestionario.tiempo_estimado}
+              preguntas={cuestionario.preguntas.length}
+              handleClickComenzar={() => handleComenzarCuestionario(cuestionario.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

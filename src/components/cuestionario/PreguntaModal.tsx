@@ -7,9 +7,10 @@ type PreguntaModalProps = {
   children: React.ReactNode;
   handleCerrar: () => void;
   handleSubmit: () => void;
+  isSubmitting?: boolean;
 };
 
-export const PreguntaModal = ({ header, children, handleCerrar, handleSubmit }: PreguntaModalProps) => {
+export const PreguntaModal = ({ header, children, handleCerrar, handleSubmit, isSubmitting = false }: PreguntaModalProps) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   return (
@@ -85,11 +86,19 @@ export const PreguntaModal = ({ header, children, handleCerrar, handleSubmit }: 
               style={{ backgroundColor: COLORS.claro, borderTop: `1px solid ${COLORS.azul_claro}` }}
             >
               <button
-                onClick={() => { handleSubmit(); setIsSubmitted(true); }}
-                className="w-full font-semibold py-4 px-6 rounded-lg shadow-md transition-all hover:brightness-90 hover:shadow-lg cursor-pointer"
+                onClick={async () => { 
+                  await handleSubmit(); 
+                  setIsSubmitted(true); 
+                }}
+                disabled={isSubmitting}
+                className={`w-full font-semibold py-4 px-6 rounded-lg shadow-md transition-all ${
+                  isSubmitting 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'hover:brightness-90 hover:shadow-lg cursor-pointer'
+                }`}
                 style={{ backgroundColor: COLORS.azul, color: COLORS.texto_claro }}
               >
-                Enviar registro diario
+                {isSubmitting ? 'Enviando...' : 'Enviar cuestionario'}
               </button>
             </div>
           </>

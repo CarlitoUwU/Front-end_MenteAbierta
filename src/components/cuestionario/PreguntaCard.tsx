@@ -7,7 +7,7 @@ type PreguntaCardProps = {
   descripcion: string;
   duracion: string;
   preguntas: number;
-  handleClickComenzar: (id: string) => void;
+  handleClickComenzar: (id?: string | number) => void;
 };
 
 export const PreguntaCard = ({
