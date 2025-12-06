@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   MdPerson,
   MdEmail,
-  MdPhone,
   MdCalendarToday,
   MdNotifications,
   MdLock,
@@ -35,10 +34,6 @@ export const PerfilContent = (_props: DashboardContentProps) => {
 
     cargarPerfil();
   }, []);
-
-  const handleGuardarCambios = () => {
-    console.log("Guardando cambios...");
-  };
 
   const handleCerrarSesion = () => {
     if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
@@ -104,14 +99,11 @@ export const PerfilContent = (_props: DashboardContentProps) => {
             </div>
 
             {/* Estadísticas */}
-            <div className="grid grid-cols-2 gap-6 w-full pt-4">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-purple-600">24</p>
-                <p className="text-sm text-gray-500 mt-1">Días activo</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-purple-600">12</p>
-                <p className="text-sm text-gray-500 mt-1">Ejercicios</p>
+            <div className="w-full pt-4">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <p className="text-xs text-purple-700 text-center">
+                  📈 Las estadísticas se cargarán automáticamente<br/>cuando completes ejercicios y registres emociones
+                </p>
               </div>
             </div>
           </div>
@@ -154,42 +146,58 @@ export const PerfilContent = (_props: DashboardContentProps) => {
                 </div>
               </div>
 
-              {/* Teléfono */}
+              {/* ID de usuario (UUID) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Teléfono (opcional)
+                  ID de usuario
                 </label>
                 <div className="flex items-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
-                  <MdPhone className="text-xl text-gray-500" />
+                  <MdPerson className="text-xl text-gray-500" />
                   <input
-                    type="tel"
-                    defaultValue="+56 9 1234 5678"
-                    className="flex-1 bg-transparent outline-none text-gray-800"
+                    type="text"
+                    value={usuario?.id || ''}
+                    readOnly
+                    className="flex-1 bg-transparent outline-none text-gray-600 text-sm font-mono"
                   />
                 </div>
               </div>
 
-              {/* Fecha de nacimiento */}
+              {/* Estado de cuenta */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha de nacimiento
+                  Estado de la cuenta
                 </label>
                 <div className="flex items-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
                   <MdCalendarToday className="text-xl text-gray-500" />
-                  <input
-                    type="date"
-                    className="flex-1 bg-transparent outline-none text-gray-800"
-                  />
+                  <div className="flex-1">
+                    <p className="text-gray-800 font-medium">
+                      {usuario?.is_active ? '✅ Cuenta activa' : '❌ Cuenta inactiva'}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Registrado: {new Date(usuario?.date_joined || '').toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Botón guardar */}
+            {/* Nota informativa */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+              <p className="text-sm text-blue-800">
+                <strong>🔒 Privacidad:</strong> Solo almacenamos tu correo y seudónimo para garantizar tu privacidad.
+              </p>
+            </div>
+
+            {/* Botón guardar (deshabilitado porque los campos son readonly) */}
             <button
-              onClick={handleGuardarCambios}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md hover:shadow-lg mt-6"
+              disabled
+              className="w-full bg-gray-300 text-gray-500 font-semibold py-3 px-6 rounded-lg mt-6 cursor-not-allowed"
             >
-              Guardar cambios
+              Los datos de perfil no son editables
             </button>
           </div>
         </div>

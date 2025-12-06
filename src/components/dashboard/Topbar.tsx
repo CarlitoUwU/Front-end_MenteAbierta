@@ -1,12 +1,37 @@
 import { MdNotifications, MdSettings, MdSearch } from "react-icons/md";
 import { COLORS } from "../../constants/colors";
 import { Avatar } from "../avatar/Avatar";
+import { authService } from "../../services/auth.service";
 
 type TopbarProps = {
   toPerfil: () => void;
 };
 
 export const Topbar = ({ toPerfil }: TopbarProps) => {
+  // Obtener datos del usuario actual
+  const usuario = authService.getCurrentUser();
+  
+  // Calcular inicial para el avatar
+  const getInicial = () => {
+    if (usuario?.seudonimo) {
+      return usuario.seudonimo.charAt(0).toUpperCase();
+    }
+    if (usuario?.email) {
+      return usuario.email.charAt(0).toUpperCase();
+    }
+    return "U";
+  };
+
+  // Nombre a mostrar
+  const getNombre = () => {
+    if (usuario?.seudonimo) {
+      return usuario.seudonimo;
+    }
+    if (usuario?.email) {
+      return usuario.email.split('@')[0];
+    }
+    return "Usuario";
+  };
   return (
     <header
       className="py-5 px-8 shadow-md border-b"
@@ -81,13 +106,13 @@ export const Topbar = ({ toPerfil }: TopbarProps) => {
             className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer hover:brightness-110"
             onClick={toPerfil}
           >
-            <Avatar letter="U" />
+            <Avatar letter={getInicial()} />
             <div className="hidden lg:block text-left">
               <p
                 className="font-semibold text-sm"
                 style={{ color: COLORS.texto_oscuro }}
               >
-                User123
+                {getNombre()}
               </p>
               <p className="text-xs" style={{ color: COLORS.texto_medio }}>
                 Miembro activo
