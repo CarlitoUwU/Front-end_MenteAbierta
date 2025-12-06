@@ -8,6 +8,7 @@ import {
   MdChevronRight,
   MdExitToApp,
 } from "react-icons/md";
+import toast from "react-hot-toast";
 import type { DashboardContentProps } from "../@types/dashboard";
 import { authService } from "../services/auth.service";
 import type { Usuario } from "../types";
@@ -39,9 +40,30 @@ export const PerfilContent = (_props: DashboardContentProps) => {
   }, []);
 
   const handleCerrarSesion = () => {
-    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
-      authService.logout();
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <p className="font-semibold">¿Estás seguro de que deseas cerrar sesión?</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              authService.logout();
+            }}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+          >
+            Sí, cerrar sesión
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: Infinity,
+    });
   };
 
   // Obtener iniciales del usuario para el avatar

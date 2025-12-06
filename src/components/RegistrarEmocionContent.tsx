@@ -1,9 +1,11 @@
 import { useState, type ChangeEvent } from "react";
 import { FaBolt, FaCloudRain, FaFrown, FaMeh, FaHeart, FaSmile } from "react-icons/fa";
+import toast from "react-hot-toast";
 import type { DashboardContentProps } from "../@types/dashboard";
 import { InputSlider } from "./ui/InputSlider";
 import { COLORS } from "../constants/colors";
 import { EmocionButton } from "./dashboard/registrarEmocion/EmocionButton";
+import { emocionesService } from "../services/emociones.service";
 
 const emociones = [
   { id: "feliz", label: "Feliz", color: "bg-yellow-400", icon: <FaSmile size={30} /> },
@@ -17,8 +19,9 @@ const emociones = [
 export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
   const [mostrarCaja, setMostrarCaja] = useState(false);
   const [valor, setValor] = useState(5);
-  const [_emocion, setEmocion] = useState<string | null>(null);
+  const [emocion, setEmocion] = useState<string | null>(null);
   const [textoNota, setTextoNota] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
   const handleSeleccionarEmocion = (emocionId: string) => {
     setEmocion(emocionId);
@@ -29,6 +32,42 @@ export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
     if (e.target.value.length <= 500) {
       setTextoNota(e.target.value);
     }
+  }
+
+  const handleGuardar = async () => {
+    if (!emocion) {
+      toast.error("Debes seleccionar una emoción");
+      return;
+    }
+
+    setGuardando(true);
+    try {
+      await emocionesService.registrar({
+        emocion: emocion.toUpperCase(),
+        intensidad: valor,
+        nota: textoNota.trim() || undefined,
+      });
+
+      toast.success("Emoción registrada exitosamente");
+      
+      // Resetear formulario
+      setEmocion(null);
+      setValor(5);
+      setTextoNota("");
+      setMostrarCaja(false);
+    } catch (error: any) {
+      console.error("Error al guardar emoción:", error);
+      toast.error(error.response?.data?.detail || "Error al guardar el registro");
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  const handleCancelar = () => {
+    setEmocion(null);
+    setValor(5);
+    setTextoNota("");
+    setMostrarCaja(false);
   }
 
   return (
@@ -73,10 +112,23 @@ export const RegistrarEmocionContent = (_props: DashboardContentProps) => {
         )}
 
         <div className="flex items-center gap-4 mt-6">
-          <button className={`flex-1 py-3 rounded-lg ${mostrarCaja ? "cursor-pointer" : ""}`} style={{ backgroundColor: COLORS.claro, color: COLORS.texto_medio }} disabled>
-            Guardar registro
+          <button 
+            className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${
+              mostrarCaja && !guardando
+                ? "bg-purple-600 text-white hover:bg-purple-700 cursor-pointer" 
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            onClick={handleGuardar}
+            disabled={!mostrarCaja || guardando}
+          >
+            {guardando ? "Guardando..." : "Guardar registro"}
           </button>
-          <button className={`w-[200px] hover:underline ${mostrarCaja ? "cursor-pointer" : ""}`} style={{ color: COLORS.texto_medio }} onClick={() => setMostrarCaja(false)}>
+          <button 
+            className={`w-[200px] hover:underline ${mostrarCaja ? "cursor-pointer" : "cursor-not-allowed"}`}
+            style={{ color: COLORS.texto_medio }}
+            onClick={handleCancelar}
+            disabled={!mostrarCaja}
+          >
             Cancelar
           </button>
         </div>

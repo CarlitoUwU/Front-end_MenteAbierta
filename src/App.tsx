@@ -5,10 +5,33 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { RoutesEnum } from "./utils/routes";
 import { COLORS } from "./constants/colors";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <div style={{ backgroundColor: COLORS.azul_claro, minHeight: "100vh" }}>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#fff',
+            color: '#333',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Routes>
         <Route path="/" element={<Navigate to={RoutesEnum.LOGIN} />} />
         <Route path={RoutesEnum.REGISTER} element={<RegisterPage />} />
